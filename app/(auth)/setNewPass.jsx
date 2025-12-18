@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import COLORS from '../../constant/colors';
@@ -8,9 +9,12 @@ export default function SetNewPass() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false)
 
+  const router = useRouter();
+
 
   const handleNewPass = () => {
     console.log("Login")
+    router.push("(tabs)")
   }
 
   return (
