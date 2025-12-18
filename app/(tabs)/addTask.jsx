@@ -1,30 +1,40 @@
-import { useRouter } from 'expo-router';
-
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Platform, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { KeyboardAvoidingView } from 'react-native-web';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import COLORS from '../../constant/colors';
+import { useAddTaskMutation } from '../../redux/feature/tasksApi';
+// import { useAddTaskMutation } from '../../redux/tasksApi'; 
 
 export default function AddTask() {
     const [task, setTask] = useState("");
-    const [description, setDescription] = useState("")
-    const [isLoading, setIsLoading] = useState(false)
+    const [description, setDescription] = useState("");
     const router = useRouter();
 
-    const handleAddTask = () => {
-        console.log("add task")
-    }
-    return (
+    const [addTask, { isLoading }] = useAddTaskMutation(); 
 
+    const handleAddTask = async () => {
+        if (!task || !description) {
+            alert("Please fill in both title and description");
+            return;
+        }
+
+        try {
+            await addTask({ title: task, description }).unwrap();
+            alert("Task added successfully!");
+            router.push("/(tabs)"); 
+        } catch (err) {
+            console.error(err);
+            alert("Failed to add task");
+        }
+    };
+
+    return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
             behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
-            {/* <SafeScreen> */}
-
             <View style={styles.container}>
-
                 <View style={styles.taskDetailContainer}>
                     <Pressable onPress={() => router.push("/(tabs)")} style={styles.iconWrapper}>
                         <Ionicons name="chevron-back" size={24} color="#84C000" />
@@ -34,9 +44,9 @@ export default function AddTask() {
                     </View>
                 </View>
 
-                <View style={""}>
+                <View>
                     <View style={styles.formContainer}>
-                        {/* Email */}
+                        {/* Task Title */}
                         <View style={styles.inputGroup}>
                             <Text style={styles.label}>Task Title</Text>
                             <View style={styles.inputContainer}>
@@ -46,13 +56,12 @@ export default function AddTask() {
                                     placeholderTextColor={COLORS.placeholderText}
                                     value={task}
                                     onChangeText={setTask}
-                                    // keyboardType="email-address"
                                     autoCapitalize="none"
                                 />
                             </View>
                         </View>
 
-                        {/* Text ares */}
+                        {/* Description */}
                         <View style={styles.inputGroup}>
                             <Text style={styles.label}>Description</Text>
                             <View style={styles.inputContainer}>
@@ -62,35 +71,26 @@ export default function AddTask() {
                                     placeholderTextColor={COLORS.placeholderText}
                                     value={description}
                                     onChangeText={setDescription}
-                                    // keyboardType="email-address"
                                     multiline
                                     autoCapitalize="none"
                                 />
                             </View>
                         </View>
 
-                        {/* submit button */}
-                        <TouchableOpacity style={styles.button} onPress={handleAddTask} disabled={isLoading} >
-                            {
-                                isLoading ? (
-                                    <ActivityIndicator color="#fff" />
-                                ) :
-                                    (
-                                        <Text style={styles.buttonText}>Save Task</Text>
-                                    )
-                            }
+                        {/* Submit button */}
+                        <TouchableOpacity style={styles.button} onPress={handleAddTask} disabled={isLoading}>
+                            {isLoading ? (
+                                <ActivityIndicator color="#fff" />
+                            ) : (
+                                <Text style={styles.buttonText}>Save Task</Text>
+                            )}
                         </TouchableOpacity>
-
                     </View>
                 </View>
-
             </View>
-            {/* </SafeScreen> */}
         </KeyboardAvoidingView>
-
-    )
+    );
 }
-
 
 
 
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
 
     formContainer: {
         marginBottom: 16,
-        marginTop:20
+        marginTop: 20
     },
     inputGroup: {
         marginBottom: 20,

@@ -1,8 +1,8 @@
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
-import { Link, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { Link, useRouter } from "expo-router";
+import { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -15,25 +15,24 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from 'react-native';
-import COLORS from '../../constant/colors';
-import { useRegisterMutation } from '../../redux/feature/authApi';
-
+} from "react-native";
+import COLORS from "../../constant/colors";
+import { useRegisterMutation } from "../../redux/feature/authApi";
 
 export default function Signup() {
   const [register] = useRegisterMutation();
   const [file, setFile] = useState(null);
 
   const [form, setForm] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    address: '',
-    password: '',
-    confirmPassword: '',
+    firstName: "",
+    lastName: "",
+    email: "",
+    address: "",
+    password: "",
+    confirmPassword: "",
   });
 
-  console.log("dataaa",form)
+  console.log("data", form);
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -43,14 +42,17 @@ export default function Signup() {
 
   // File picker
 
+  console.log("bse", image);
+
   const pickImage = async () => {
     try {
-      if (Platform.OS !== 'web') {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== 'granted') {
+      if (Platform.OS !== "web") {
+        const { status } =
+          await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== "granted") {
           Alert.alert(
-            'Permission Denied',
-            'We need camera roll permissions to upload an image'
+            "Permission Denied",
+            "We need camera roll permissions to upload an image"
           );
           return;
         }
@@ -65,32 +67,53 @@ export default function Signup() {
       });
 
       if (!result.canceled) {
-        setImage(result.assets[0].uri);
+        const uri = result.assets[0].uri;
+        setImage(uri);
+
+        // Extract filename and type
+        const filename = uri.split("/").pop();
+        const match = /\.(\w+)$/.exec(filename);
+        const type = match ? `image/${match[1]}` : `image/jpeg`;
+
+        // Set file state with proper structure
+        setFile({
+          uri: uri,
+          name: filename || "photo.jpg",
+          type: type,
+        });
+
+        console.log("File set:", { uri, name: filename, type }); // Debug log
 
         if (result.assets[0].base64) {
           setImageBase64(result.assets[0].base64);
         } else {
-          const base64 = await FileSystem.readAsStringAsync(result.assets[0].uri, {
+          const base64 = await FileSystem.readAsStringAsync(uri, {
             encoding: FileSystem.EncodingType.Base64,
           });
           setImageBase64(base64);
         }
       }
     } catch (error) {
-      console.error('Error picking image:', error);
-      Alert.alert('Error', 'There was a problem selecting your image');
+      console.error("Error picking image:", error);
+      Alert.alert("Error", "There was a problem selecting your image");
     }
   };
 
-
   const handleSignup = async () => {
-    if (!form.firstName || !form.lastName || !form.email || !form.address || !form.password || !form.confirmPassword) {
-      alert('Please fill in all fields');
+    if (
+      !form.firstName ||
+      !form.lastName ||
+      !form.email ||
+      !form.address ||
+      !form.password ||
+      !form.confirmPassword
+    ) {
+      alert("Please fill in all fields");
       return;
     }
 
     if (form.password !== form.confirmPassword) {
-      alert('Password does not match');
+      alert("Password does not match");
       return;
     }
 
@@ -98,15 +121,15 @@ export default function Signup() {
 
     try {
       const formData = new FormData();
-      formData.append('firstName', form.firstName);
-      formData.append('lastName', form.lastName);
-      formData.append('email', form.email);
-      formData.append('address', form.address);
-      formData.append('password', form.password);
-      formData.append('confirmPassword', form.confirmPassword);
+      formData.append("firstName", form.firstName);
+      formData.append("lastName", form.lastName);
+      formData.append("email", form.email);
+      formData.append("address", form.address);
+      formData.append("password", form.password);
+      formData.append("confirmPassword", form.confirmPassword);
 
       if (file) {
-        formData.append('image', {
+        formData.append("file", {
           uri: file.uri,
           name: file.name,
           type: file.type,
@@ -114,11 +137,11 @@ export default function Signup() {
       }
 
       const res = await register(formData).unwrap();
-      alert('Registration successful!');
-      router.push('/(auth)');
+      alert("Registration successful!");
+      router.push("/(auth)");
     } catch (err) {
       console.log(err);
-      alert(err?.data?.message || 'Registration failed');
+      alert(err?.data?.message || "Registration failed");
     } finally {
       setIsLoading(false);
     }
@@ -127,7 +150,7 @@ export default function Signup() {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.container}>
@@ -218,7 +241,7 @@ export default function Signup() {
                   style={styles.eyeIcon}
                 >
                   <Ionicons
-                    name={showPassword ? 'eye-outline' : 'eye-off-outline'}
+                    name={showPassword ? "eye-outline" : "eye-off-outline"}
                     size={20}
                     color={COLORS.primary}
                   />
@@ -235,9 +258,7 @@ export default function Signup() {
                   placeholder="Enter your password"
                   placeholderTextColor={COLORS.textSecondary}
                   value={form.confirmPassword}
-                  onChangeText={(v) =>
-                    setForm({ ...form, confirmPassword: v })
-                  }
+                  onChangeText={(v) => setForm({ ...form, confirmPassword: v })}
                   secureTextEntry={!showPassword}
                 />
                 <TouchableOpacity
@@ -245,14 +266,13 @@ export default function Signup() {
                   style={styles.eyeIcon}
                 >
                   <Ionicons
-                    name={showPassword ? 'eye-outline' : 'eye-off-outline'}
+                    name={showPassword ? "eye-outline" : "eye-off-outline"}
                     size={20}
                     color={COLORS.primary}
                   />
                 </TouchableOpacity>
               </View>
             </View>
-
 
             {/* <View style={styles.inputGroup}>
               <Text style={styles.label}>Upload Image</Text>
@@ -271,16 +291,22 @@ export default function Signup() {
               <Text style={styles.label}>Book Image</Text>
               <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
                 {image ? (
-                  <Image source={{ uri: image }} style={{ height: "100%", width: "100%" }} />
+                  <Image
+                    source={{ uri: image }}
+                    style={{ height: "100%", width: "100%" }}
+                  />
                 ) : (
                   <View style={styles.placeholderContainer}>
-                    <Ionicons name="image-outline" size={40} color={COLORS.textSecondary} />
+                    <Ionicons
+                      name="image-outline"
+                      size={40}
+                      color={COLORS.textSecondary}
+                    />
                     <Text style={""}>Tap to select image</Text>
                   </View>
                 )}
               </TouchableOpacity>
             </View>
-
 
             {/* Already have account */}
             <View style={styles.signUpLoc}>
@@ -311,34 +337,31 @@ export default function Signup() {
   );
 }
 
-
-
-
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     backgroundColor: "#FAFBF9",
     paddingVertical: 60,
     paddingHorizontal: 16,
-    margin: "2%"
+    margin: "2%",
   },
   scrollContainer: {
     flexGrow: 1,
   },
   headerContainer: {
-    marginBottom: 23
+    marginBottom: 23,
   },
   title: {
     // textAlign: "center",
     fontSize: 30,
     marginBottom: 10,
     fontWeight: "500",
-    color: "#111827"
+    color: "#111827",
   },
   description: {
     color: "#6B7280",
     fontWeight: "400",
-    fontSize: 14
+    fontSize: 14,
   },
 
   formContainer: {
@@ -367,7 +390,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 1, height: 1 },
 
     elevation: 6,
-
   },
 
   input: {
@@ -378,7 +400,6 @@ const styles = StyleSheet.create({
   eyeIcon: {
     padding: 8,
   },
-
 
   imagePicker: {
     width: "100%",
@@ -416,7 +437,6 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
 
-
   orContainer: {
     alignItems: "center",
   },
@@ -438,7 +458,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
-
 
   button: {
     backgroundColor: "#84C000",

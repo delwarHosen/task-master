@@ -38,6 +38,7 @@ export default function Login() {
                 password: password.trim(),
             }).unwrap();
             console.log(res)
+             router.push('/(tabs)')
         } catch (err) {
             console.log('Full login error:', JSON.stringify(err, null, 2));
             Alert.alert('Login Failed', err?.data?.message || 'Invalid credentials');

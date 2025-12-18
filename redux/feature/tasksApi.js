@@ -13,11 +13,25 @@ export const tasksApi = createApi({
             return headers
         },
     }),
+
+
+
     endpoints: (builder) => ({
+
+        addTask: builder.mutation({
+            query: ({ title, description }) => ({
+                url: 'task/create-task',
+                method: 'POST',
+                body: { title, description },
+            }),
+        }),
+
         getAllTasks: builder.query({
             query: () => 'task/get-all-task',
         }),
+
+
     }),
 })
 
-export const { useGetAllTasksQuery } = tasksApi
+export const { useGetAllTasksQuery, useAddTaskMutation } = tasksApi

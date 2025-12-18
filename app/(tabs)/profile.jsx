@@ -1,16 +1,24 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useGetMyProfileQuery } from '../../redux/feature/authApi';
 
 export default function Profile() {
-  const router = useRouter()
+  const router = useRouter();
+  const { data, error, isLoading } = useGetMyProfileQuery();
+
+console.log(data)
+
+  if (isLoading) return <ActivityIndicator size="large" color="#84C000" style={{ flex: 1 }} />;
+  if (error) return <Text style={{ padding: 20 }}>Failed to load profile</Text>;
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <Image
           style={styles.profileImage}
-          source={require("../../assets/images/profileImage.png")}
+          source={data?.profileImage ? { uri: data.profileImage } : require("../../assets/images/profileImage.png")}
           resizeMethod='none'
         />
 
@@ -53,7 +61,7 @@ export default function Profile() {
           </View>
 
 
-          <Pressable onPress={()=>router.push("/termCondition")} style={styles.navContainer}>
+          <Pressable onPress={() => router.push("/termCondition")} style={styles.navContainer}>
             <View style={styles.navItem}>
               <Ionicons name='document-text-outline' size={24} color="#84C000" />
               <Text style={{ color: "#111827" }}>Terms & Condition</Text>
@@ -65,7 +73,7 @@ export default function Profile() {
           </Pressable>
 
 
-          <Pressable onPress={()=>router.push("/privecyPolicy")} style={styles.navContainer}>
+          <Pressable onPress={() => router.push("/privecyPolicy")} style={styles.navContainer}>
             <View style={styles.navItem}>
               <Ionicons name='clipboard-outline' size={24} color="#84C000" />
               <Text style={{ color: "#111827" }}>Privacy policy</Text>
@@ -76,7 +84,7 @@ export default function Profile() {
             </View>
           </Pressable>
 
-          <Pressable onPress={()=>router.push("/helpSupport")} style={styles.navContainer}>
+          <Pressable onPress={() => router.push("/helpSupport")} style={styles.navContainer}>
             <View style={styles.navItem}>
               <Ionicons name='help-circle-outline' size={24} color="#84C000" />
               <Text style={{ color: "#111827" }}>Help/Support</Text>
@@ -106,6 +114,8 @@ export default function Profile() {
     </SafeAreaView>
   );
 }
+
+
 
 const styles = StyleSheet.create({
   safeArea: {

@@ -11,8 +11,8 @@ export const authApi = createApi({
             query: (formData) => ({
                 url: '/user/register',
                 method: 'POST',
-                body: formData, 
-                
+                body: formData,
+
             }),
         }),
 
@@ -30,9 +30,13 @@ export const authApi = createApi({
             query: (body) => ({
                 url: '/user/login',
                 method: 'POST',
-                body: JSON.stringify(body), 
+                body: JSON.stringify(body),
                 headers: { 'Content-Type': 'application/json' },
             }),
+        }),
+
+        getMyProfile: builder.query({
+            query: () => '/user/my-profile',
         }),
 
     }),
@@ -42,4 +46,5 @@ export const {
     useRegisterMutation,
     useLoginMutation,
     useVerifyEmailMutation,
+    useGetMyProfileQuery
 } = authApi;
