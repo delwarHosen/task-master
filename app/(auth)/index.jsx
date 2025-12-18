@@ -1,137 +1,155 @@
-import { Ionicons } from '@expo/vector-icons';
-import { Link, useRouter } from 'expo-router';
-import { useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import COLORS from '../../constant/colors';
+import { Ionicons } from '@expo/vector-icons'
+import { Link, useRouter } from 'expo-router'
+import { useState } from 'react'
+import {
+    ActivityIndicator,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
+} from 'react-native'
+import COLORS from '../../constant/colors'
+import { useLoginMutation } from '../../redux/feature/authApi.js'
+// import { useLoginMutation } from '../../redux/api/authApi'
 
 export default function Login() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
-    const [isLoading, setIsLoading] = useState(false)
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('123456')
+    const [showPassword, setShowPassword] = useState(false)
 
-    const router = useRouter();
+    const router = useRouter()
 
+    // RTK Query login mutation
+    const [login, { isLoading }] = useLoginMutation()
 
-    const handleLogin = () => {
-        console.log("Login");
-        router.push("(tabs)")
+    const handleLogin = async () => {
+        if (!email || !password) {
+            Alert.alert('Error', 'Email and password required')
+            return
+        }
+
+        try {
+            const res = await login({
+                email: email.trim(),
+                password: password.trim(),
+            }).unwrap();
+            console.log(res)
+        } catch (err) {
+            console.log('Full login error:', JSON.stringify(err, null, 2));
+            Alert.alert('Login Failed', err?.data?.message || 'Invalid credentials');
+        }
     }
+
+    // const handleLogin=()=>{
+    //     router.replace('/(tabs)')
+    // }
 
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-            {/* <SafeScreen> */}
             <View style={styles.container}>
 
+                {/* Header */}
                 <View style={styles.headerContainer}>
                     <Text style={styles.title}>Welcome Back!</Text>
-                    <Text style={styles.description}>Stay productive and take control of your tasks.</Text>
+                    <Text style={styles.description}>
+                        Stay productive and take control of your tasks.
+                    </Text>
                 </View>
 
+                {/* Form */}
+                <View style={styles.formContainer}>
 
-                <View style={""}>
-                    <View style={styles.formContainer}>
-                        {/* Email */}
-                        <View style={styles.inputGroup}>
-                            <Text style={styles.label}>Email Address</Text>
-                            <View style={styles.inputContainer}>
-                                <TextInput
-                                    style={styles.input}
-                                    placeholder="Enter your email"
-                                    placeholderTextColor={COLORS.placeholderText}
-                                    value={email}
-                                    onChangeText={setEmail}
-                                    keyboardType="email-address"
-                                    autoCapitalize="none"
-                                />
-                            </View>
+                    {/* Email */}
+                    <View style={styles.inputGroup}>
+                        <Text style={styles.label}>Email Address</Text>
+                        <View style={styles.inputContainer}>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Enter your email"
+                                placeholderTextColor={COLORS.placeholderText}
+                                value={email}
+                                onChangeText={setEmail}
+                                keyboardType="email-address"
+                                autoCapitalize="none"
+                            />
                         </View>
-
-                        {/* Password */}
-                        <View style={styles.inputGroup}>
-                            <Text style={styles.label}>Password</Text>
-                            <View style={styles.inputContainer}>
-                                <TextInput
-                                    style={styles.input}
-                                    placeholder="Enter your password"
-                                    placeholderTextColor={COLORS.placeholderText}
-                                    value={password}
-                                    onChangeText={setPassword}
-                                    secureTextEntry={!showPassword}
-                                />
-                                <TouchableOpacity
-                                    onPress={() => setShowPassword(!showPassword)}
-                                    style={styles.eyeIcon}
-                                >
-                                    <Ionicons
-                                        name={showPassword ? "eye-outline" : "eye-off-outline"}
-                                        size={20}
-                                        color={COLORS.primary}
-                                    />
-                                </TouchableOpacity>
-
-                                {/* Remind me */}
-                                {/* <TouchableOpacity
-                                    style={styles.checkboxContainer}
-                                    onPress={() => onChange(!value)}
-                                    activeOpacity={0.8}
-                                >
-                                    <View style={[styles.checkbox, value && styles.checked]}>
-                                        {value && (
-                                            <Ionicons name="checkmark" size={16} color="#fff" />
-                                        )}
-                                    </View>
-
-                                    <Text style={styles.checkboxLabel}>{label}</Text>
-                                </TouchableOpacity> */}
-                            </View>
-                        </View>
-
-
-
-                        <View style={styles.orContainer}>
-                            <View style={styles.orRow}>
-                                <View style={styles.orLine} />
-                                <Text style={styles.orText}>OR</Text>
-                                <View style={styles.orLine} />
-                            </View>
-                        </View>
-
-
-                        <View style={styles.signUpLoc}>
-                            <Text style={styles.signupText}>Don't have an accounr?</Text>
-                            <Link href="/signup" asChild>
-                                <TouchableOpacity>
-                                    <Text style={styles.link}>Sign Up</Text>
-                                </TouchableOpacity>
-                            </Link>
-                        </View>
-
-                        {/* Login button */}
-                        <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={isLoading} >
-                            {
-                                isLoading ? (
-                                    <ActivityIndicator color="#fff" />
-                                ) :
-                                    (
-                                        <Text style={styles.buttonText}>Login</Text>
-                                    )
-                            }
-                        </TouchableOpacity>
-
-
-
                     </View>
-                </View>
 
+                    {/* Password */}
+                    <View style={styles.inputGroup}>
+                        <Text style={styles.label}>Password</Text>
+                        <View style={styles.inputContainer}>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Enter your password"
+                                placeholderTextColor={COLORS.placeholderText}
+                                value={password}
+                                onChangeText={setPassword}
+                                secureTextEntry={!showPassword}
+                            />
+
+                            <TouchableOpacity
+                                onPress={() => setShowPassword(!showPassword)}
+                                style={styles.eyeIcon}
+                            >
+                                <Ionicons
+                                    name={showPassword ? 'eye-outline' : 'eye-off-outline'}
+                                    size={20}
+                                    color={COLORS.primary}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+
+                    {/* OR */}
+                    <View style={styles.orContainer}>
+                        <View style={styles.orRow}>
+                            <View style={styles.orLine} />
+                            <Text style={styles.orText}>OR</Text>
+                            <View style={styles.orLine} />
+                        </View>
+                    </View>
+
+                    {/* Signup link */}
+                    <View style={styles.signUpLoc}>
+                        <Text style={styles.signupText}>
+                            Don’t have an account?
+                        </Text>
+                        <Link href="/signup" asChild>
+                            <TouchableOpacity>
+                                <Text style={styles.link}>Sign Up</Text>
+                            </TouchableOpacity>
+                        </Link>
+                    </View>
+
+                    {/* Login Button */}
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={handleLogin}
+                        disabled={isLoading}
+                    >
+                        {
+                            isLoading ? (
+                                <ActivityIndicator color="#fff" />
+                            ) : (
+                                <Text style={styles.buttonText}>Login</Text>
+                            )
+                        }
+                    </TouchableOpacity>
+
+                </View>
             </View>
-            {/* </SafeScreen> */}
         </KeyboardAvoidingView>
     )
 }
+
 
 
 const styles = StyleSheet.create({
@@ -178,7 +196,7 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
         paddingHorizontal: 14,
 
-      
+
         shadowColor: "#000",
         shadowOpacity: 0.1,
         shadowRadius: 24,

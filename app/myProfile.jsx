@@ -51,7 +51,6 @@ export default function MyProfile() {
                             <Text style={{ color: "#111827" }}>Samaltman@gmail.com</Text>
                         </View>
 
-
                     </Pressable>
 
                     <Pressable style={styles.navContainer}>

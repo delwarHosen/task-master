@@ -32,7 +32,7 @@ export default function Profile() {
             onPress={() => router.push("/accountSetting")}
             style={styles.navContainer}>
             <View style={styles.navItem}>
-              <Ionicons name='settings' size={24} color="#84C000" />
+              <Ionicons name='settings-outline' size={24} color="#84C000" />
               <Text style={{ color: "#111827" }}>Account Setting</Text>
             </View>
 
@@ -53,7 +53,7 @@ export default function Profile() {
           </View>
 
 
-          <Pressable style={styles.navContainer}>
+          <Pressable onPress={()=>router.push("/termCondition")} style={styles.navContainer}>
             <View style={styles.navItem}>
               <Ionicons name='document-text-outline' size={24} color="#84C000" />
               <Text style={{ color: "#111827" }}>Terms & Condition</Text>
@@ -65,9 +65,9 @@ export default function Profile() {
           </Pressable>
 
 
-          <Pressable style={styles.navContainer}>
+          <Pressable onPress={()=>router.push("/privecyPolicy")} style={styles.navContainer}>
             <View style={styles.navItem}>
-              <Ionicons name='document-text-outline' size={24} color="#84C000" />
+              <Ionicons name='clipboard-outline' size={24} color="#84C000" />
               <Text style={{ color: "#111827" }}>Privacy policy</Text>
             </View>
 
@@ -76,7 +76,7 @@ export default function Profile() {
             </View>
           </Pressable>
 
-          <Pressable style={styles.navContainer}>
+          <Pressable onPress={()=>router.push("/helpSupport")} style={styles.navContainer}>
             <View style={styles.navItem}>
               <Ionicons name='help-circle-outline' size={24} color="#84C000" />
               <Text style={{ color: "#111827" }}>Help/Support</Text>

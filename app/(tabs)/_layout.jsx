@@ -30,7 +30,7 @@ export default function TabLayout() {
                         height: 52,
                         width: 52,
                         borderRadius: 100,
-                        marginTop:11,
+                        marginTop: 11,
                         alignItems: "center",
                         justifyContent: "center",
                         backgroundColor: focused ? "#84C000" : "transparent",
@@ -44,7 +44,7 @@ export default function TabLayout() {
                 >
                     <Ionicons
                         name={name}
-                         size={focused ? 24 : 30}
+                        size={focused ? 24 : 30}
                         color={focused ? "#FFFFFF" : "#000000"}
                     />
                 </View>

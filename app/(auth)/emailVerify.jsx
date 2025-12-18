@@ -1,19 +1,27 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import COLORS from '../../constant/colors';
 
 export default function EmailVerify() {
-    const [email, setEmail] = useState("");
+    const { email: userEmail } = useLocalSearchParams();
+    const [email, setEmail] = useState(userEmail || "");
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
 
 
     const handleVerifyEmail = () => {
-        console.log("Login")
-        router.push("/verifyCode")
-    }
+        if (!email) {
+            alert("Email is required");
+            return;
+        }
 
+        console.log("Send verification code to:", email)
+        router.push({
+            pathname: '/verifyCode',
+            params: { email }
+        })
+    }
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
@@ -42,6 +50,7 @@ export default function EmailVerify() {
                                     onChangeText={setEmail}
                                     keyboardType="email-address"
                                     autoCapitalize="none"
+                                    editable={false}
                                 />
                             </View>
                         </View>

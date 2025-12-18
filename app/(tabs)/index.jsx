@@ -1,11 +1,20 @@
 import { useRouter } from 'expo-router';
-import { FlatList, Image, ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Image, ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import taskData from '../../data/taskData.js';
+// import taskData from '../../data/taskData.js';
 // import { taskItems } from "../../data/taskData.js"
+import { useGetAllTasksQuery } from '../../redux/feature/tasksApi';
+
 
 export default function Home() {
     const router = useRouter();
+
+    const { taskData, error, isLoading } = useGetAllTasksQuery();
+    console.log(taskData)
+
+    if (isLoading) return <ActivityIndicator size="large" color="#84C000" />;
+    if (error) return <Text>Error loading tasks</Text>;
+
     // console.log(taskData)
     const renderItem = ({ item }) => (
         <Pressable onPress={() => router.push(`/taskdetails/${item._id}`)}>
